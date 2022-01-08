@@ -32,6 +32,8 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <locale.h>
+
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -75,6 +77,7 @@
 
 /* Matrix typedef */
 typedef struct cmatrix {
+
     int val;
     bool is_head;
 } cmatrix;
@@ -522,8 +525,8 @@ if (console) {
     /* Set up values for random number generation */
     if (classic) {
         /* Japanese character unicode range [they are seen in the original cmatrix] */
-        randmin = 12288;
-        highnum = 12351;
+        randmin = /*12288; */  12353;
+        highnum = /* 12351; */ 12543;
     } else if (console || xwindow) {
         randmin = 166;
         highnum = 217;
@@ -573,7 +576,7 @@ if (console) {
                     ioctl(STDIN_FILENO, TIOCSTI, (char*)(str + i));
                 free(str);
 #endif
-                finish();
+              finish();
             } else {
                 switch (keypress) {
 #ifdef _WIN32
@@ -694,7 +697,7 @@ if (console) {
                     } else if (matrix[0][j].val == -1
                         && matrix[1][j].val == ' ') {
                         length[j] = (int) rand() % (LINES - 3) + 3;
-                        matrix[0][j].val = (int) rand() % randnum + randmin;
+                        matrix[0][j].val = (int) rand() % randnum + randmin; 
 
                         spaces[j] = (int) rand() % LINES + 1;
                     }
@@ -777,7 +780,14 @@ if (console) {
                     } else if (matrix[i][j].val == -1) {
                         addch(' ');
                     } else {
-                        addch(matrix[i][j].val);
+                         if (matrix[i][j].val  >= 12439 &&  matrix[i][j].val <=  12446) {
+                            matrix[i][j].val = matrix[i][j].val -6;
+                            }
+                            wchar_t s[2];
+                            s[0] = matrix[i][j].val;
+                            s[1] = 0;
+                            addwstr(s);     
+                       /* addch(matrix[i][j].val); */
                     }
 
                     attroff(COLOR_PAIR(COLOR_WHITE));
@@ -832,9 +842,18 @@ if (console) {
                         if (matrix[i][j].val == -1) {
                             addch(' ');
                         } else if (lambda && matrix[i][j].val != ' ') {
-                            addstr("λ");
+                             addstr("λ");  
+                                
                         } else {
-                            addch(matrix[i][j].val);
+                                /*these characters are missing from the range... or Hiragana and Katakana  */
+                           if (matrix[i][j].val  >= 12439 &&  matrix[i][j].val <=  12444) {
+                                        matrix[i][j].val = matrix[i][j].val -6;   
+                                           } 
+                                
+                             wchar_t s[2];
+                            s[0] = matrix[i][j].val;        
+                            s[1] = 0;
+                            addwstr(s);
                         }
                         if (bold == 2 ||
                             (bold == 1 && matrix[i][j].val % 2 == 0)) {
